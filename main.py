@@ -23,8 +23,8 @@ import itertools
 
 import matplotlib.pyplot as plt
 
-from iris_mog.dag_kl import dag_kl
-from iris_mog.better_graphs import process_graph
+from weatherstations_clusterer.dag_kl import dag_kl
+from weatherstations_clusterer.better_graphs import process_graph
 
 # the above stuff is likely boilerplate but I have no idea what precisely it does
 
@@ -82,11 +82,12 @@ def generate_combinations(nums):
 
 def main():
 
-    n_gmm_components = 6  # original was 3 (species of flower); NCEI divides weather stations ~geographically into 6
+    n_gmm_components = 3
+    # original was 3 (species of flower); NCEI divides weather stations ~geographically into 6, ultimately I ended up using Kepler Objects instead which... class into Candidates, Confirmeds, and False Positives. F.
     covariance_type = 'diag'
     init_params = 'random' # default: 'kmeans'
 
-    data_df = pd.read_csv("weatherstations.csv")  # I will have to add this dataset in
+    data_df = pd.read_csv("kepler.csv")  # added this dataset in
     data = data_df[[c for c in data_df.columns[:-1]]].to_numpy(dtype=np.float32)
     y = data_df['species'].map({"setosa": 0, "versicolor": 1, "virginica": 2}).values  # this line is almost the right shape but wrong as is
 
