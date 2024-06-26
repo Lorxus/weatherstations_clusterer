@@ -78,7 +78,7 @@ def check_epsilons(gmm, n_samples, axes_to_keep):
 
     return edkl
     
-full_axes = list(range(12))
+full_axes = list(range(12))  # makes the list of the 12 ways a single axis might be dropped
 # print(full_axes)
 dropped_axis_list = []
 
