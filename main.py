@@ -64,6 +64,8 @@ def check_epsilons(gmm, n_samples, axes_to_keep):
     p_X = np.exp(gmm.score_samples(data))
 
     #edkl = p_X @ np.einsum("xl,xl->x", p_L_X, (np.log(p_L_X) - np.log(p_L_Xs)))
+    # the above line was commented out when it got to me
+    
     edkl = np.einsum("xl,xl->x", p_L_X, (np.log(p_L_X) - np.log(p_L_Xs))).mean()
 
     edkl = edkl / jnp.log(2)
