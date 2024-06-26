@@ -87,7 +87,7 @@ def main():
     covariance_type = 'diag'
     init_params = 'random' # default: 'kmeans'
 
-    data_df = pd.read_csv("kepler.csv")  # added this dataset in
+    data_df = pd.read_csv("cumulative_2024.06.26_11.59.31.csv")  # added this dataset in
     data = data_df[[c for c in data_df.columns[:-1]]].to_numpy(dtype=np.float32)
     y = data_df['species'].map({"setosa": 0, "versicolor": 1, "virginica": 2}).values  # this line is almost the right shape but wrong as is
 
