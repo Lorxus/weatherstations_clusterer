@@ -46,6 +46,7 @@ def visualize(data, y, y_hat):
     plt.show()
 
 
+# I am like 93% sure that this is the part where they check the redundancy condition
 def check_epsilons(gmm, n_samples, axes_to_keep):
     data, labels = gmm.sample(n_samples)
     data_castrated = data[:, axes_to_keep]
@@ -63,7 +64,7 @@ def check_epsilons(gmm, n_samples, axes_to_keep):
 
     p_X = np.exp(gmm.score_samples(data))
 
-    #edkl = p_X @ np.einsum("xl,xl->x", p_L_X, (np.log(p_L_X) - np.log(p_L_Xs)))
+    # edkl = p_X @ np.einsum("xl,xl->x", p_L_X, (np.log(p_L_X) - np.log(p_L_Xs)))
     # the above line was commented out when it got to me
     
     edkl = np.einsum("xl,xl->x", p_L_X, (np.log(p_L_X) - np.log(p_L_Xs))).mean()
@@ -76,11 +77,18 @@ def check_epsilons(gmm, n_samples, axes_to_keep):
     print("E_x[Dkl(P[(L|X) || (L|Xs)])] = ", edkl)
 
     return edkl
+    
+full_axes = list(range(12))
+# print(full_axes)
+dropped_axis_list = []
 
-def generate_combinations(nums):
-    for i in range(1, len(nums) + 1):
-        for combination in itertools.combinations(nums, i):
-            yield combination
+for i in range(12):
+    tempfull = full_axes.copy()
+    tempfull.remove(i)
+    dropped_axis_list.append(tempfull)
+    # print(tempfull)
+
+# print(dropped_axis_list)
 
 def main():
 
@@ -91,7 +99,7 @@ def main():
 
     data_df = pd.read_csv("cumulative_2024.06.26_12.15.36")  # added this dataset in
     data = data_df[[c for c in data_df.columns[:-1]]].to_numpy(dtype=np.float32)
-    y = data_df['species'].map({"setosa": 0, "versicolor": 1, "virginica": 2}).values  # this line is almost the right shape but wrong as is
+    y = data_df['category'].map({"confirmed": 0, "candidate": 1, "false positive": 2}).values  # this line is almost the right shape but wrong as is
 
     gmm = GaussianMixture(n_components=n_gmm_components, random_state=0,
                           covariance_type=covariance_type, init_params=init_params).fit(data)
@@ -109,13 +117,13 @@ def main():
         check_epsilons(gmm, n_samples=len(data), axes_to_keep=axes_to_keep)
 
     redundancy_error = 0
-    for axes_to_keep in [[1,2,3], [0,2,3], [0,1,3], [0,1,2]]:  # this is the part about being able to drop features. I'll need to add more or refactor this part.
+    for axes_to_keep in dropped_axis_list:
         redundancy_error += check_epsilons(gmm, n_samples=len(data), axes_to_keep=axes_to_keep)
     print("\nSum of redundancy errors for weak invar: ", redundancy_error)
 
     print("\nIsomorphism bound: ", redundancy_error + entropy_l_given_x*2)
 
-    #visualize(data, y, y_hat)
+    # visualize(data, y, y_hat)
 
 
     print('\n\n=================\n')
@@ -136,7 +144,7 @@ def main():
         check_epsilons(gmm2, n_samples=len(data), axes_to_keep=axes_to_keep)
 
     redundancy_error = 0
-    for axes_to_keep in [[1, 2, 3], [0, 2, 3], [0, 1, 3], [0, 1, 2]]: # this is another part about being able to drop features. I'll need to add more or refactor this part.
+    for axes_to_keep in dropped_axis_list:
         redundancy_error += check_epsilons(gmm2, n_samples=len(data), axes_to_keep=axes_to_keep)
     print("\nSum of redundancy errors for weak invar: ", redundancy_error)
 
